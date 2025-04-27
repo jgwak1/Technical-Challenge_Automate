@@ -51,3 +51,10 @@ pytest
 ```
 
 Uses FastAPI TestClient to ensure endpoints respond and calculations are sane.
+
+
+---
+
+## Link
+
+- 🚀 **Live Web App**: [https://technical-challengeautomate-5xuwd4zc4dn38al5ryuf2n.streamlit.app/](https://technical-challengeautomate-5xuwd4zc4dn38al5ryuf2n.streamlit.app/)
