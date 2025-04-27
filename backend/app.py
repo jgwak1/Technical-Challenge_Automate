@@ -165,9 +165,6 @@ async def ai_insight(company_name: str, query: str):
     client = Client()    
     try:
 
-        print("dd-2")
-        print(f"prompt: {prompt}")
-
         response = client.chat.completions.create(
             model= 'gpt-4o',
             messages= {"role": "user",  "content": prompt} , 
