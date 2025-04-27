@@ -7,7 +7,7 @@ import altair as alt
 
 # 1️⃣  Where to find the API root
 API_ROOT = (
-    st.secrets.get("API_ROOT")               # ← .streamlit/secrets.toml or Cloud “Secrets”
+    st.secrets["API_ROOT"]            # ← .streamlit/secrets.toml or Cloud “Secrets”
     or os.getenv("API_ROOT")                 # ← container / CI / docker-compose
     or "http://localhost:8000"               # ← last-ditch local default
 )
