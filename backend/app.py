@@ -85,15 +85,17 @@ async def metrics(company_name: str):
     max_dtp = int(cdf["days_to_pay"].max())
 
     # Custom late definition: > average days_to_pay
-    late_mask = cdf["days_to_pay"] > avg_dtp
-    late_invoices = cdf.loc[late_mask, "invoice_reference"].tolist()
+    late_mask_gt_avg_dtp = cdf["days_to_pay"] > avg_dtp
+    late_invoices_gt_avg_dtp = cdf.loc[late_mask_gt_avg_dtp, "invoice_reference"].tolist()
+
+    late_mask_gt_30 = cdf["days_to_pay"] > 30
+    late_invoices_gt_30 = cdf.loc[late_mask_gt_30, "invoice_reference"].tolist()
 
     def group_totals(freq: str, label: str) -> List[Dict]:
         grp = (cdf.set_index("date_invoiced")
                  .groupby(pd.Grouper(freq=freq))
                  .agg(invoice_total=("invoice_amount", "sum"),
-                      paid_total=("paid_amount", "sum"),
-                      invoice_count=("invoice_reference", "count"))
+                      paid_total=("paid_amount", "sum"))
                  .reset_index())
         grp[label] = grp["date_invoiced"]
         if freq == "M":
@@ -102,7 +104,7 @@ async def metrics(company_name: str):
             grp[label] = grp["date_invoiced"].dt.strftime("%Y-%W")
         elif freq == "Y":
             grp[label] = grp["date_invoiced"].dt.year.astype(str)
-        return grp[[label, "invoice_total", "paid_total", "invoice_count"]].to_dict(orient="records")
+        return grp[[label, "invoice_total", "paid_total"]].to_dict(orient="records")
 
     monthly_totals = group_totals("M", "month")
     weekly_totals = group_totals("W", "week")
@@ -124,11 +126,12 @@ async def metrics(company_name: str):
                   .reset_index()
                   .to_dict(orient="records"))
 
-    return {
+    return {        
         "average_days_to_pay": round(avg_dtp, 2),
         "min_days_to_pay": min_dtp,
         "max_days_to_pay": max_dtp,
-        "late_invoices": late_invoices,
+        "late_invoices_gt_avg_dtp": late_invoices_gt_avg_dtp,
+        "late_invoices_gt_30": late_invoices_gt_30,
         "monthly_totals": monthly_totals,
         "weekly_totals": weekly_totals,
         "annual_totals": annual_totals,
@@ -141,9 +144,9 @@ async def metrics(company_name: str):
 
 # ############################################################################################
 
-# Following feature is not working 
+# This feature was designed to integrate with the open-source gpt4free project, but integration has not been resolved
 
-@app.post("/client/{company_name}/insight")
+@app.post("/client/{company_name}/ai_insight")
 async def ai_insight(company_name: str, query: str):
     """Generate a natural-language insight using GPT based on the company dataframe."""
 
