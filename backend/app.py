@@ -15,8 +15,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
 
-from g4f.client import Client
-from g4f.Provider import OpenaiChat
+# from g4f.client import Client
+# from g4f.Provider import OpenaiChat
 
 DATA_PATH = Path(__file__).resolve().parents[0] / "data" / "invoices_clean.csv"
 
@@ -146,40 +146,40 @@ async def metrics(company_name: str):
 
 # This feature was designed to integrate with the open-source gpt4free project, but integration has not been resolved
 
-@app.post("/client/{company_name}/ai_insight")
-async def ai_insight(company_name: str, query: str):
-    """Generate a natural-language insight using GPT based on the company dataframe."""
+# @app.post("/client/{company_name}/ai_insight")
+# async def ai_insight(company_name: str, query: str):
+#     """Generate a natural-language insight using GPT based on the company dataframe."""
 
-    cdf = _company_df(company_name)
-    # Limit rows to keep prompt size reasonable
-    sample = cdf.head(200).to_csv(index=False)
-    print(sample)
+#     cdf = _company_df(company_name)
+#     # Limit rows to keep prompt size reasonable
+#     sample = cdf.head(200).to_csv(index=False)
+#     print(sample)
 
-    prompt = f"""You are an AI finance analyst. Answer the user's question about {company_name}
-    using the data below. Be concise and quantitative.
+#     prompt = f"""You are an AI finance analyst. Answer the user's question about {company_name}
+#     using the data below. Be concise and quantitative.
 
-    User question: {query}
+#     User question: {query}
 
-    CSV data:
-    {sample}
-    """
+#     CSV data:
+#     {sample}
+#     """
 
-    # Using gpt4free to generate the answer
-    client = Client()    
-    try:
+#     # Using gpt4free to generate the answer
+#     client = Client()    
+#     try:
 
-        response = client.chat.completions.create(
-            model= 'gpt-4o',
-            messages= {"role": "user",  "content": prompt} , 
-        ).choices[0].message.content.strip()
+#         response = client.chat.completions.create(
+#             model= 'gpt-4o',
+#             messages= {"role": "user",  "content": prompt} , 
+#         ).choices[0].message.content.strip()
 
-    except Exception as e:
-        raise HTTPException(500, f"gpt4free error: {str(e)}")
+#     except Exception as e:
+#         raise HTTPException(500, f"gpt4free error: {str(e)}")
 
-    print(f"{response}")
+#     print(f"{response}")
 
 
-    return {"answer": response}
+#     return {"answer": response}
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000)
